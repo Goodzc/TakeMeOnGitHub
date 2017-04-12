@@ -13,8 +13,8 @@ body{
     left: 5px;
 }
 .container .pin{
-    width:10px;
-    height:10px;
+    width:5px;
+    height:5px;
     border-radius:50%;
     background:red;
     position:absolute;
