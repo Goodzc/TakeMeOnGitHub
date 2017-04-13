@@ -123,3 +123,13 @@ function updateData(element) {
     $(".modal").modal();
 }
 get(gpageIndex);
+//监听创建用户的单击事件
+$("#createdocumentBtn").click(function () {
+    $('.modal').modal();
+});
+// $("#createdocumentBtn").on("click",function () {
+//
+// });
+// $("#createdocumentBtn").bind('click',function () {
+//
+// });
