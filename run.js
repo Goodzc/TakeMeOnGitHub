@@ -6,16 +6,24 @@ var express = require("express");
 //express() 是一个由 express 模块导出的入口（top-level）函数。
 //调用express方法将返回值express对象赋值给app变量
 var app = express();
+app.all("*",function (req,res,next) {
+    res.header("Access-Control-Allow-Origin","*");
+    next();
+});
 //配置一个路由，调用Router方法将返回值对象赋值给router变量
 var router = express.Router();
 //引入自定user模块，将其exports对象赋值给userDb变量
-var userDb = require('./server/proceed/user');
-userDb.init(router);
-userDb.userRouter(router);
+// var userDb = require('./server/proceed/user');
+// userDb.init(router);
+// userDb.userRouter(router);
+//党报项目
+var doc = require("./server/proceed/document");
+doc.init(router);
 
 app.use("/", router);
 //在根目录上查找该静态资源文件
 app.use("/", express.static(__dirname));
+
 //查找80
 app.listen(8121, function () {
     console.log('服务器运行在8121');
@@ -120,6 +128,10 @@ rou.get ("/employee",function (req,res) {
    };
    res.json(Data);
 });
+
+
+
+
 
 App.use("/",rou);
 App.use("/",ex.static(__dirname));

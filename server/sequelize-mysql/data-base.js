@@ -149,3 +149,40 @@ exports.createUser = function () {
 exports.getUser = function () {
     return User.findAll();
 };
+
+
+//党报项目
+
+var uuid = require("node-uuid");
+var ReportUnit = sequelize.define(
+    "reportUnit",
+    {
+        id:{
+            type:Sequelize.STRING,
+            primaryKey:true
+        },
+        name:{
+            type:Sequelize.STRING
+        },
+        status:{
+            type:Sequelize.INTEGER
+        },
+        remark:{
+            type:Sequelize.STRING
+        }
+    }
+);
+exports.createReportUnit = function (unit) {
+  return ReportUnit.sync().then(function () {
+      return ReportUnit.create({
+          id:uuid(),
+          name:unit.name,
+          status:unit.status,
+          remark:unit.remark
+          }
+      );
+  })
+};
+exports.getUnits = function () {
+  return ReportUnit.findAll();
+};
