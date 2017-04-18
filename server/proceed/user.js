@@ -1,159 +1,142 @@
 /**
  * Created by forli on 2017/4/6.
  */
-//引入data-base模块，使用sequlize操作数据库
+//引入data-base模块，使用sequelize操作数据库
 var dbSequelize = require('../sequelize-mysql/data-base');
-
-exports.userRouter = function (router) {
-    //以get方式注册更新用户信息的路由
-    router.get("/updateUser", function (req, res) {
-        dbSequelize.createUser().then(function (r) {
-            var result = {
-                id: r.dataValues.id,
-                userName: r.dataValues.userName,
-                password:r.dataValues.password,
-                email:r.dataValues.email,
-                phoneNumber:r.dataValues.phoneNumber,
-                realName:r.dataValues.realName,
-                age:r.dataValues.age,
-                qq:r.dataValues.qq,
-                createAt: r.dataValues.createdAt,
-                updateAt: r.dataValues.updatedAt
-            };
-            res.json(result);
-        });
-    });
-
-  /*  router.post("/updateUser", function (req, res) {
-        dbSequelize.createUser().then(function (r) {
-            var result = {
-                id: r.dataValues.id,
-                userName: r.dataValues.userName,
-                createAt: r.dataValues.createdAt,
-                updateAt: r.dataValues.updatedAt
-            };
-            res.json(result);
-        });
-    });*/
-
-    router.get("/findUser", function (req, res) {
-        dbSequelize.getUser().then(function (r) {
-            var result = {
-                status: 0,
-                message: "",
-                contents: []
-            };
-            r.forEach(function (rTemp) {
-                var data = {
-                    id: rTemp.dataValues.id,
-                    userName: rTemp.dataValues.userName,
-                    email:rTemp.dataValues.email,
-                    phoneNumber:rTemp.dataValues.phoneNumber,
-                    realName:rTemp.dataValues.realName,
-                    age:rTemp.dataValues.age,
-                    qq:rTemp.dataValues.qq,
-                    createAt: rTemp.dataValues.createdAt,
-                    updateAt: rTemp.dataValues.updatedAt
-                };
-                result.contents.push(data);
-            });
-            res.json(result);
-        });
-    });
-};
-
+var fs = require("fs-extra");
+var formidable = require("formidable");
 //exports暴露init方法给引用本模块的模块
-//init方法的作用是使用传递进来的rout对象，注册用户相关的操作的路由
-/*exports.init = function (rout) {
-    //请求updateDocument文件和function（req，res）函数
-    //    req就是requsest http 客户端请求对象
-    //    包括了客户端信息（ip），操作系统，版本，软件信息（浏览器，http客户端等）
-    //     还包括客户请求传递的数据
-    //    res就是response,标识服务器端根据客户端传递的参数，组织的服务器端数据响应给客户端。
-    rout.get("/updateDocument",function (req,res) {
+//init方法的作用，使用传递进来的router对象，注册用户相关的操作的
+//路由
+exports.init = function(router){
+    function updateUser(req,res,method){
         //创建临时对象userData，接收客户端传递的参数
-        //req.query,接收地址最后的？传递的参数
-        var userData = {
-            title:req.query.userTitle,
-            type:req.query.userType,
-            content:req.query.userContent,
-            author:req.query.userAuthor,
-            avator:req.query.userAvator,
-            id:req.query.id
-        };
-        //判断客户端是否传递userid，如果传了userid是表示数据库已存在用户的信息，要去更新这条数据
+        //req.query，接收地址最后的?传递的参数
+        var userData = null;
+        if(method == "get"){
+            userData = {
+                userName:req.query.userName,
+                email:req.query.email,
+                mobile:req.query.mobile,
+                qq:req.query.qq,
+                realName:req.query.realName,
+                age:req.query.age,
+                id:req.query.id
+            };
+        }else if(method == "post"){
+            userData = {
+                userName:req.body.userName,
+                email:req.body.email,
+                mobile:req.body.mobile,
+                qq:req.body.qq,
+                realName:req.body.realName,
+                age:req.body.age,
+                id:req.body.id,
+                avator:req.body.icon
+            };
+        }
+
+
+        //判断客户端是否传递userid
+        //如果传了userid 表示是数据库已存在该用户的信息，要去
+        //更新这条数据。
+        //如果没传userId表示要在数据库新建一条数据
         if(userData.id){
             //修改已存在的用户数据
-            dbSequelize.updateDocument(userData).then(function (r) {
-                //更新数据操作是由node.js发起请求，由数据库执行，当数据库执行完成后，会通过then方法传递的函数，来告诉node.js
+            dbSequelize.updateUser(userData).then(function(r){
+                //更新数据操作是由nodejs发起的请求，
+                //由数据库执行，当数据库执行完成后，
+                //会通过then方法传递的函数，来告诉nodejs
                 //数据库更新完成，更新完成返回的数据由r参数传递
                 res.json({
                     flag:0,
                     message:"",
-                    container:r
-                })
+                    content:r
+                });
             });
-        }
-        //如果没有传userid表示要在数据库新建一条数据
-        else {
-            //创建新的用户数据
-            dbSequelize.createDocument(userData).then(function (r) {
+        }else{
+            //新增用户数据
+            dbSequelize.createUser(userData).then(function(r){
                 var result = {
                     id:r.dataValues.id,
-                    title:r.dataValues.title,
-                    type:r.dataValues.type,
-                    content:r.dataValues.content,
-                    author:r.dataValues.author,
-                    avator:r.dataValues.avator,
+                    userName:r.dataValues.userName,
                     createAt:r.dataValues.createdAt,
                     updateAt:r.dataValues.updatedAt
                 };
                 res.json(result);
             });
         }
+    }
+    //以get的方式注册更新用户信息的路由
+    router.get("/updateUser",function(req,res){
+        updateUser(req,res,"get");
     });
- /!*   rout.post("/updateDocument",function (req,res) {
-        dbSequelize.createDocument().then(function (r) {
-            var result = {
-                id:r.dataValues.id,
-                title:r.dataValues.title,
-                type:r.dataValues.type,
-                content:r.dataValues.content,
-                author:r.dataValues.author,
-                avator:r.dataValues.avator,
-                createAt:r.dataValues.createdAt,
-                updateAt:r.dataValues.updatedAt
-            };
-            res.json(result);
+    router.post("/updateUser",function(req,res){
+        var iconFile = "";
+        var form = new formidable.IncomingForm();
+        form.parse(req,function(err, fields, files) {
+                // var data = {
+                //     fields: fields,
+                //     files: files
+                // };
+                // console.log(iconFile);
+                // res.writeHead(200, {'content-type': 'text/plain'});
+                // res.write('received upload:\n\n');
+                // res.end(util.inspect({fields: fields, files: files}));
+                req.body.icon = iconFile;
+                updateUser(req,res,"post");
+            });
+
+        var fStream;
+        //将input type=file中的可读文件流，
+        //写入到可写文件流
+        req.pipe(req.busboy);
+        //文件流写入成功事件
+        req.busboy.on('file',function(fieldName,file,filename){
+            iconFile = filename;
+            // var body = req.body;
+            //创建一个可写文件流对象
+            fStream = fs.createWriteStream('./server/uploadFile/'+filename);
+            //将图片文件写入可写文件流，写入完成之后自动关闭
+            //文件流(也就是清除内存)
+            file.pipe(fStream);
+            //监听到文件流被关闭时，表示文件写入磁盘成功！
+            fStream.on("close",function(){
+                res.json({content:"上传成功!"});
+            });
         });
-    });*!/
-    rout.get("/findDocument",function (req,res){
-        var pIndex = Number(req.query.pageIndex);
-        console.log(pIndex+":is page index");
-        dbSequelize.getDocument().then(function(r){
+
+
+    });
+    router.get("/findUser",function(req,res){
+        var pIndex = req.query.pageIndex;
+        var pSize = req.query.pageSize;
+        pIndex = Number(pIndex);
+        pSize = Number(pSize);
+        console.log(pIndex+":is page index.");
+
+        dbSequelize.getUser(null,{pageIndex:pIndex,pageSize:pSize}).then(function(r){
             var result = {
                 status:0,
                 message:"",
                 contents:[],
                 total:r.length
             };
-            var start = 0;
-            var end = 0;
-            var pSize = Number(req.query.pageSize);
-            start = pIndex * pSize;
-            end = start + pSize;
-            if(end>r.length){
+            var start = pIndex * pSize;
+            var end = start + pSize;
+            if(end > r.length){
                 end = r.length;
             }
-            for(i = start;i<end;i++){
+            for(var i = start;i < end;i++){
                 var rTemp = r[i];
                 var data = {
                     id:rTemp.dataValues.id,
-                    title:rTemp.dataValues.title,
-                    type:rTemp.dataValues.type,
-                    content:rTemp.dataValues.content,
-                    author:rTemp.dataValues.author,
-                    avator:rTemp.dataValues.avator,
+                    userName:rTemp.dataValues.userName,
+                    age:rTemp.dataValues.age,
+                    email:rTemp.dataValues.email,
+                    phoneNumber:rTemp.dataValues.phoneNumber,
+                    qq:rTemp.dataValues.qq,
+                    realName:rTemp.dataValues.realName,
                     createAt:rTemp.dataValues.createdAt,
                     updateAt:rTemp.dataValues.updatedAt
                 };
@@ -162,11 +145,7 @@ exports.userRouter = function (router) {
             // r.forEach(function(rTemp){
             //     var data = {
             //         id:rTemp.dataValues.id,
-            //         title:rTemp.dataValues.title,
-            //         type:rTemp.dataValues.type,
-            //         content:rTemp.dataValues.content,
-            //         author:rTemp.dataValues.author,
-            //         avator:rTemp.dataValues.avator,
+            //         userName:rTemp.dataValues.userName,
             //         createAt:rTemp.dataValues.createdAt,
             //         updateAt:rTemp.dataValues.updatedAt
             //     };
@@ -175,4 +154,5 @@ exports.userRouter = function (router) {
             res.json(result);
         });
     });
-};*/
+
+};

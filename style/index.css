@@ -3,42 +3,39 @@
 }
 body{
     margin:0;
-    padding: 0;
+    padding:0;
 }
 .container{
-    width:100vw;
+    width:100%;
     height:100vh;
     overflow:hidden;
-    position: relative;
-
-}
-.item-wrapper{
-    width: 100%;
-    height: auto;
-    position: absolute;
-    left:0;
-    top:0;
-    transition: top 1s;
+    position:relative;
 }
 .main-item{
-    width: 100%;
-    height: 100vh;
-    background: gray;
+    width:100%;
+    height:100vh;
+    background:gray;
     position:relative;
 }
 .main-item:nth-child(2){
-    background: red;
+    background:red;
 }
-
+.item-wrapper{
+    width:100%;
+    height:auto;
+    position:absolute;
+    left:0;
+    top:0;
+    transition:top 0.5s;
+}
 .carousel{
-    width: 100%;
-    height: 100%;
+    width:100%;
+    height:100%;
     position:absolute;
     top:0;
     left:0;
-
-    overflow: hidden;
+    overflow:hidden;
 }
 .carousel img{
-    width: 100%;
+    width:100vw;
 }

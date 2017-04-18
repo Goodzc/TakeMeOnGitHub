@@ -4,42 +4,39 @@
     <meta charset="UTF-8">
     <title>jquery</title>
     <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="index.js"></script>
     <style>
         body{
             margin:0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
+            padding:0
         }
         .container{
-            width: 100px;
-            height: 100px;
+            width:100px;
+            height:100px;
             background:#000;
-            position: relative;
-            top: 5px;
-            left: 5px;
+            position:relative;
         }
         .pin{
-            width: 10px;
-            height: 10px;
+            width:10px;
+            height:10px;
             border-radius:50%;
             background:red;
             position:absolute;
         }
         .pin:nth-child(1){
-        left:-5px;
-        top:-5px;
+            left:-5px;
+            top:-5px;
         }
         .pin:nth-child(2){
-            right: -5px;
-            top: -5px;
+            right:-5px;
+            top:-5px;
         }
         .pin:nth-child(3){
-            left: -5px;
-            bottom: -5px;
+            right:-5px;
+            bottom:-5px;
         }
         .pin:nth-child(4){
-            right: -5px;
+            left:-5px;
             bottom:-5px;
         }
     </style>
@@ -51,7 +48,5 @@
         <div class="pin"></div>
         <div class="pin"></div>
     </div>
-
-    <script src="index.js"></script>
 </body>
 </html>
