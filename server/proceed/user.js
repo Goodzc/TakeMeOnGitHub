@@ -24,6 +24,9 @@ exports.init = function(router){
                 id:req.query.id
             };
         }else if(method == "post"){
+            var remark = JSON.stringify({
+                iconFile:req.body.icon
+            });
             userData = {
                 userName:req.body.userName,
                 email:req.body.email,
@@ -32,7 +35,7 @@ exports.init = function(router){
                 realName:req.body.realName,
                 age:req.body.age,
                 id:req.body.id,
-                avator:req.body.icon
+                remark:remark
             };
         }
 
@@ -60,6 +63,7 @@ exports.init = function(router){
                 var result = {
                     id:r.dataValues.id,
                     userName:r.dataValues.userName,
+                    remark:r.dataValues.remark,
                     createAt:r.dataValues.createdAt,
                     updateAt:r.dataValues.updatedAt
                 };
@@ -84,6 +88,13 @@ exports.init = function(router){
                 // res.write('received upload:\n\n');
                 // res.end(util.inspect({fields: fields, files: files}));
                 req.body.icon = iconFile;
+                req.body.age = fields.age;
+                req.body.email = fields.email;
+                req.body.mobile = fields.mobile;
+                req.body.qq = fields.qq;
+                req.body.realName = fields.realName;
+                req.body.userName = fields.userName;
+                req.body.id = fields.id;
                 updateUser(req,res,"post");
             });
 
@@ -102,7 +113,7 @@ exports.init = function(router){
             file.pipe(fStream);
             //监听到文件流被关闭时，表示文件写入磁盘成功！
             fStream.on("close",function(){
-                res.json({content:"上传成功!"});
+                console.log("上传成功!");
             });
         });
 
@@ -137,6 +148,7 @@ exports.init = function(router){
                     phoneNumber:rTemp.dataValues.phoneNumber,
                     qq:rTemp.dataValues.qq,
                     realName:rTemp.dataValues.realName,
+                    remark:rTemp.dataValues.remark,
                     createAt:rTemp.dataValues.createdAt,
                     updateAt:rTemp.dataValues.updatedAt
                 };

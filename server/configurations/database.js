@@ -4,8 +4,8 @@
 exports.mysql = {
     host:'localhost',
     user:'root',
-    password:'mysql',
-    database:'oadb',
+    password:'liu940625',
+    database:'takemeongithub-zc',
     dialect:'mysql',
     connectionLimit: 50,
     port:3306

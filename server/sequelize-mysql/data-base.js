@@ -115,7 +115,8 @@ exports.updateUser = function(user){
                 phoneNumber:user.mobile,
                 realName:user.realName,
                 age:user.age,
-                qq:user.qq
+                qq:user.qq,
+                remark:user.remark
             },{
                 where:{
                     id:user.id

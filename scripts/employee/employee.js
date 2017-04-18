@@ -74,7 +74,7 @@ function getData(currentPageIndex){
                 html += "</td>";
 
                 html += "<td>";
-                html += employee.icon?employee.icon:"";
+                html += employee.remark?employee.remark:"";
                 html += "</td>";
 
                 var createDate = new Date(employee.createAt);
