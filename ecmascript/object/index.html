@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<script>
+    var student = {
+        name: "李谨圻",
+        gender: "男",
+        age: 18,
+        run: function (where) {
+            console.log(this.name + "在" + where + "跑步");
+        },
+        girl : {
+            name:"unknow",
+            gender:"女"
+        }
+    };
+    var student2 = student;
+    student2.name = "赵川";
+</script>
+</body>
+</html>

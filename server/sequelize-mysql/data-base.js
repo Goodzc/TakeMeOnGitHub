@@ -65,6 +65,10 @@ var User = sequelize.define(
         },
         remark: {
             type: Sequelize.STRING
+        },
+        status:{
+            type:Sequelize.STRING,
+            defaultValue:0
         }
     },
     {
@@ -109,15 +113,19 @@ exports.createReportUnit = function(unit){
 exports.updateUser = function(user){
     if(!user.id) return;
     return User.sync().then(function(){
-        return User.update({
-                userName:user.userName,
-                email:user.email,
-                phoneNumber:user.mobile,
-                realName:user.realName,
-                age:user.age,
-                qq:user.qq,
-                remark:user.remark
-            },{
+        var userData = {
+            userName:user.userName,
+            email:user.email,
+            phoneNumber:user.mobile,
+            realName:user.realName,
+            age:user.age,
+            qq:user.qq
+        };
+        if(user.remark){
+            userData.remark=user.remark;
+        }
+        return User.update(userData,
+            {
                 where:{
                     id:user.id
                 }
@@ -136,15 +144,29 @@ exports.createUser = function(user){
             realName:user.realName,
             age:user.age,
             qq:user.qq,
-            remarkUser:user.remark
+            remark:user.remark
         });
     });
 };
 //查找所有用户
 exports.getUser = function(){
     return User.sync().then(function () {
-        return User.findAll();
+        return User.findAll({
+            where:{
+                status:0
+            }
+        });
     });
+};
+//删除用户
+exports.removeUser = function (id) {
+  return User.update({
+      status:-1
+  },{
+      where:{
+          id:id
+      }
+  });
 };
 //按id查找
 exports.findUserById = function(id){

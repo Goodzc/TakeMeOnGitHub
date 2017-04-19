@@ -13,6 +13,12 @@ exports.init = function(router){
         //创建临时对象userData，接收客户端传递的参数
         //req.query，接收地址最后的?传递的参数
         var userData = null;
+        var remark = null;
+        if(req.body.icon){
+            remark = JSON.stringify({
+                iconFile:req.body.icon
+            });
+        }
         if(method == "get"){
             userData = {
                 userName:req.query.userName,
@@ -21,12 +27,11 @@ exports.init = function(router){
                 qq:req.query.qq,
                 realName:req.query.realName,
                 age:req.query.age,
-                id:req.query.id
+                id:req.query.id,
+                remark:remark
             };
         }else if(method == "post"){
-            var remark = JSON.stringify({
-                iconFile:req.body.icon
-            });
+
             userData = {
                 userName:req.body.userName,
                 email:req.body.email,
@@ -34,9 +39,11 @@ exports.init = function(router){
                 qq:req.body.qq,
                 realName:req.body.realName,
                 age:req.body.age,
-                id:req.body.id,
-                remark:remark
+                id:req.body.id
             };
+            if(remark){
+                userData.remark = remark;
+            }
         }
 
 
@@ -51,11 +58,12 @@ exports.init = function(router){
                 //由数据库执行，当数据库执行完成后，
                 //会通过then方法传递的函数，来告诉nodejs
                 //数据库更新完成，更新完成返回的数据由r参数传递
-                res.json({
-                    flag:0,
-                    message:"",
-                    content:r
-                });
+                // res.json({
+                //     flag:0,
+                //     message:"",
+                //     content:r
+                // });
+                res.redirect("/views/employee/employee.html");
             });
         }else{
             //新增用户数据
@@ -67,10 +75,22 @@ exports.init = function(router){
                     createAt:r.dataValues.createdAt,
                     updateAt:r.dataValues.updatedAt
                 };
-                res.json(result);
+                // res.json(result);
+                res.redirect("/views/employee/employee.html");
             });
         }
     }
+    router.get("/removeUser",function (req,res) {
+             var userId=req.query.id;
+        //删除已存在的用户数据
+        dbSequelize.removeUser(userId).then(function (result) {
+            console.log(result);
+            res.json({
+                flag:1,
+                message:"删除成功！"
+            });
+        });
+    });
     //以get的方式注册更新用户信息的路由
     router.get("/updateUser",function(req,res){
         updateUser(req,res,"get");
@@ -88,7 +108,7 @@ exports.init = function(router){
                 // res.write('received upload:\n\n');
                 // res.end(util.inspect({fields: fields, files: files}));
                 req.body.icon = iconFile;
-                req.body.age = fields.age;
+                req.body.age = fields.age?fields.age:0;
                 req.body.email = fields.email;
                 req.body.mobile = fields.mobile;
                 req.body.qq = fields.qq;
@@ -104,6 +124,9 @@ exports.init = function(router){
         req.pipe(req.busboy);
         //文件流写入成功事件
         req.busboy.on('file',function(fieldName,file,filename){
+            if(!filename){
+                return;
+            }
             iconFile = filename;
             // var body = req.body;
             //创建一个可写文件流对象

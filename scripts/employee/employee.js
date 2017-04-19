@@ -74,7 +74,10 @@ function getData(currentPageIndex){
                 html += "</td>";
 
                 html += "<td>";
-                html += employee.remark?employee.remark:"";
+                if(employee.remark){
+                    var remark = JSON.parse(employee.remark);
+                    html += "<img src='../../server/uploadFile/"+remark.iconFile+"'"+ "style=width:80px;height:80px" + ">";
+                }
                 html += "</td>";
 
                 var createDate = new Date(employee.createAt);
@@ -106,9 +109,43 @@ function getData(currentPageIndex){
 }
 getData(gPageIndex);
 
-function deleteData(e){
-    var tr = $(e).parent();
+function deleteData(ele){
+    var tr = $(ele).parents("tr");
     var id = tr.attr("data-uid");
+    if(window.confirm("确定删除吗？")){
+        var url = "/removeUser";
+        $.ajax({
+            url:url,
+            type:"get",
+            data:{
+                id:id
+            }
+        }).then(function (r) {
+            console.log(r);
+            if(r.flag ==1){
+                getData(gPageIndex);
+            }
+        });
+
+        // $.get(url,{id:id}).then(function () {});
+       // 原来的写法
+       /* $.ajax({
+            url:"",
+            type:"get",
+            data:{
+                id:id
+            },
+        success:function () {
+
+        },
+        error:function(){
+
+        },
+        complete:function(){
+
+        }
+        });*/
+    }
 }
 
 var uNameEle = $("#userName");
